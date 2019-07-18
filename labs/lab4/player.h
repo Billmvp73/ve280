@@ -13,7 +13,7 @@ enum Camp {
 class Player {
 protected:
     std::string name;
-    Camp camp;
+    Camp camp;//which group
     Hero *hero;
     unsigned int health;
     bool striked;

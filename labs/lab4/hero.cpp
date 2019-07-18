@@ -163,7 +163,21 @@ ZhenJi::ZhenJi() : Hero(WEI, FEMALE, 3, "甄姬", R"(    ,/##(*%@@%/####((((((((
 ##//**,,,,****,,,,,*,,,,,,**,,,,,*///**/****/////*****////////////*******//****/((#(*/*..,****//##()") {}
 
 const Card *ZhenJi::castCard(const Card *card) {
-    throw NonCastableCardException(card);
+    if (card == nullptr) {
+        throw NonCastableCardException(card);
+    }
+    const Card *castedCard;
+    switch(card->getSuit()){
+        case CLUBS:
+            castedCard = new Dodge(card->getSpot(), card->getSuit());
+            break;
+        case SPADES:
+            castedCard = new Dodge(card->getSpot(), card->getSuit());
+            break;
+        default: throw NonCastableCardException(card);
+    }
+    castedCards.push_back(castedCard);
+    return castedCard;
 }
 
 HuaTuo::HuaTuo() : Hero(NEUTRAL, MALE, 3, "华佗", R"(    ,/##(*%@@%/###((((((((((((((((((((((((((((((((((((((((((((((((//(((((((((((((/*,......,*/(####/
@@ -217,7 +231,22 @@ HuaTuo::HuaTuo() : Hero(NEUTRAL, MALE, 3, "华佗", R"(    ,/##(*%@@%/###(((((((
 ##/////******///*,,,,,***,,,,,,,,,,,,,,,**,,,,,,,,,,,,,,,,,,,,,***,,,.,,,,,,,,,*/(#(*//**,***///##()") {}
 
 const Card *HuaTuo::castCard(const Card *card) {
-    throw NonCastableCardException(card);
+    if(card == nullptr){
+        throw NonCastableCardException(card);
+    }
+    const Card *castedCard;
+    switch (card->getSuit()){
+        case HEARTS:
+            castedCard = new Peach(card->getSpot(), card->getSuit());
+            break;
+        case DIAMONDS:
+            castedCard = new Peach(card->getSpot(), card->getSuit());
+            break;
+        default: 
+            throw NonCastableCardException(card);
+    }
+    castedCards.push_back(castedCard);
+    return castedCard;
 }
 
 LuBu::LuBu() : Hero(NEUTRAL, MALE, 4, "吕布", R"(,/(#(*#%%(/####((((((((((((((((((((((((((((((((((((((((((((((((/(((((((((((((/*,......,*/(####/

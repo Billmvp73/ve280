@@ -149,9 +149,41 @@ void Peach::takeEffect(Player *source, const std::vector<Player *> &targets) con
 }
 
 void ArrowBarrage::takeEffect(Player *source, const std::vector<Player *> &targets) const {
+    //Take effect on all players, except the current player. Must play a Dodge or receive −1 health damage
+    //what about this card?
+    source->printPlay(this);
+    for (Player *target: targets) {
+        if(target ==source){
+            continue;
+        }
+        else if (target->getHealth()) {
+            try{
+                const Card *card = target->requestCard(DODGE);
+                target->printPlay(card);
+            }catch(DiscardException &e){
+                target->printHit(this);  
+                target->decreaseHealth();
+            }
+        }
+    }
 }
 
 void BarbarianInvasion::takeEffect(Player *source, const std::vector<Player *> &targets) const {
+    //Take effect on all players, except the current player. Must play a Strike or receive -1 health damage.
+    //what about this card?
+    source->printPlay(this);
+    for(Player *target: targets){
+        if(target == source) continue;
+        else if(target->getHealth()){
+            try{
+                const Card *card = target->requestCard(STRIKE);
+                target->printPlay(card);
+            }catch(DiscardException &e){
+                target->printHit(this);
+                target->decreaseHealth();
+            }
+        }
+    }
 }
 
 void SomethingForNothing::takeEffect(Player *source, const std::vector<Player *> &targets) const {
@@ -169,10 +201,61 @@ void BountifulHarvest::takeEffect(Player *source, const std::vector<Player *> &t
 }
 
 void Dismantle::takeEffect(Player *source, const std::vector<Player *> &targets) const {
+    Player *target = source->selectTarget();
+    if (target == source) {
+        throw SelfTargetException(source);
+    } else if (!target->getHealth()) {
+        throw DeadTargetException(target);
+    } else {
+        source->printPlay(this, target);
+        size_t index = rand()%target->getNumCards();
+        target->discardCard(index);
+    }
 }
 
 void Snatch::takeEffect(Player *source, const std::vector<Player *> &targets) const {
+    Player *target = source->selectTarget();
+    if (target == source) {
+        throw SelfTargetException(source);
+    } else if (!target->getHealth()) {
+        throw DeadTargetException(target);
+    } else {
+        source->printPlay(this, target);
+        size_t index = rand()%target->getNumCards();
+        const Card *card = target->eraseCard(index);
+        source->pushCard(card);
+    }
 }
 
 void Duel::takeEffect(Player *source, const std::vector<Player *> &targets) const {
+    source->printPlay(this);
+    Player *target = source->selectTarget();
+    if (target == source) {
+        throw SelfTargetException(source);
+    } else if (!target->getHealth()) {
+        throw DeadTargetException(target);
+    } else {
+        source->printPlay(this, target);
+        bool targetstrike = false;
+        bool sourcestrike = false;
+        while(!targetstrike&&!sourcestrike){
+            try{
+                const Card *card = target->requestCard(STRIKE);
+                target->printPlay(card);
+            }catch(DiscardException &e){
+                target->printHit(this);
+                target->decreaseHealth();
+                break;
+            }
+            try{
+                const Card* card = source->requestCard(STRIKE);
+                source->printPlay(card);
+            }catch(DiscardException &e){
+                //bool sourcestrike = true;
+                source->printHit(this);
+                source->decreaseHealth();
+                break;
+            }
+        }
+    }
 }
