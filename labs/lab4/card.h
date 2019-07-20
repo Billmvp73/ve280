@@ -67,6 +67,20 @@ public:
     void takeEffect(Player *source, const std::vector<Player *> &targets) const override;
 };
 
+class LuBuStrike : public Card {
+public:
+    LuBuStrike(Spot spot, Suit suit) : Card(spot, suit, STRIKE) {}
+
+    void takeEffect(Player *source, const std::vector<Player *> &targets) const override;
+};
+
+class DCdiscard: public Card {
+public:
+    DCdiscard(Spot spot, Suit suit) : Card(spot, suit, DUEL) {}
+
+    void takeEffect(Player *source, const std::vector<Player *> &targets) const override;
+};
+
 class Dodge : public Card {
 public:
     Dodge(Spot spot, Suit suit) : Card(spot, suit, DODGE) {}

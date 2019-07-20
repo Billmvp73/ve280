@@ -300,7 +300,16 @@ LuBu::LuBu() : Hero(NEUTRAL, MALE, 4, "吕布", R"(,/(#(*#%%(/####((((((((((((((
 ##(((((((((((((((///////////////////////////////////////////////////***///***//(((#(/%@,***/((##()") {}
 
 const Card *LuBu::castCard(const Card *card) {
-    throw NonCastableCardException(card);
+    if(card == nullptr){
+        throw NonCastableCardException(card);
+    }
+    const Card *castedCard;
+    if(card->getAction() == STRIKE){
+        castedCard = new LuBuStrike(card->getSpot(), card->getSuit());
+        castedCards.push_back(castedCard);
+    }
+    else throw NonCastableCardException(card);
+    return castedCard;
 }
 
 DiaoChan::DiaoChan() : Hero(NEUTRAL, FEMALE, 3, "貂蝉", R"(    ,/(#(*%@@%/###(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((/*,......,*/(####/
@@ -354,7 +363,15 @@ DiaoChan::DiaoChan() : Hero(NEUTRAL, FEMALE, 3, "貂蝉", R"(    ,/(#(*%@@%/###(
 ##//**********,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,*/(#(*(/,.,***///##()") {}
 
 const Card *DiaoChan::castCard(const Card *card) {
-    throw NonCastableCardException(card);
+    if(card == nullptr){
+        throw NonCastableCardException(card);
+    }
+    const Card *castedCard;
+    castedCard = new DCdiscard(card->getSpot(), card->getSuit());
+    castedCards.push_back(castedCard);
+    return castedCard;
+    // no need to discard this card?
+    // what's the difference between hero's castedCards and players' cards?
 }
 
 Hero *newHero() {

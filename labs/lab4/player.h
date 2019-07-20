@@ -59,6 +59,8 @@ public:
 
     virtual void printPlay(const Card *card) const;
 
+    virtual void printPlay(const Card *card, const Player *target1, const Player* target2) const;
+
     virtual void printPlay(const Card *card, const Player *target) const;
 
     virtual void printHit(const Card *card);

@@ -135,6 +135,30 @@ void Strike::takeEffect(Player *source, const std::vector<Player *> &targets) co
     }
 }
 
+void LuBuStrike::takeEffect(Player *source, const std::vector<Player *> &targets) const {
+    if (source->getStriked()) {
+        throw NonPlayableCardException(this);
+    } else {
+        Player *target = source->selectTarget();
+        if (target == source) {
+            throw SelfTargetException(source);
+        } else if (!target->getHealth()) {
+            throw DeadTargetException(target);
+        } else {
+            source->printPlay(this, target);
+            try {
+                const Card *card1 = target->requestCard(DODGE);
+                target->printPlay(card1);
+                const Card *card2 = target->requestCard(DODGE);
+            } catch (DiscardException &e) {
+                target->printHit(this);
+                target->decreaseHealth();
+            }
+            source->setStriked(true);
+        }
+    }
+}
+
 void Dodge::takeEffect(Player *source, const std::vector<Player *> &targets) const {
     throw NonPlayableCardException(this);
 }
@@ -214,6 +238,7 @@ void Dismantle::takeEffect(Player *source, const std::vector<Player *> &targets)
 }
 
 void Snatch::takeEffect(Player *source, const std::vector<Player *> &targets) const {
+    source->printPlay(this);
     Player *target = source->selectTarget();
     if (target == source) {
         throw SelfTargetException(source);
@@ -254,6 +279,53 @@ void Duel::takeEffect(Player *source, const std::vector<Player *> &targets) cons
                 //bool sourcestrike = true;
                 source->printHit(this);
                 source->decreaseHealth();
+                break;
+            }
+        }
+    }
+}
+
+void DCdiscard::takeEffect(Player *source, const std::vector<Player *> &targets) const {
+    source->printPlay(this);
+    Player *target1 = source->selectTarget();
+    Player *target2 = source->selectTarget();
+    if(target1 == source){
+        throw SelfTargetException(source);
+    } else if (!target1->getHealth()) {
+        throw DeadTargetException(target1);
+    }
+    while(target1 == target2){
+        target2 = source->selectTarget();
+        if(target2 == source){
+            throw SelfTargetException(source);
+        } else if (!target2->getHealth()) {
+            throw DeadTargetException(target2);
+        }
+    }
+    if(target2 == source){
+        throw SelfTargetException(source);
+    } else if (!target2->getHealth()) {
+        throw DeadTargetException(target2);
+    } else {
+        source->printPlay(this, target1, target2);
+        bool targetstrike = false;
+        bool sourcestrike = false;
+        while(!targetstrike&&!sourcestrike){
+            try{
+                const Card *card = target1->requestCard(STRIKE);
+                target1->printPlay(card);
+            }catch(DiscardException &e){
+                target1->printHit(this);
+                target1->decreaseHealth();
+                break;
+            }
+            try{
+                const Card* card = target2->requestCard(STRIKE);
+                target2->printPlay(card);
+            }catch(DiscardException &e){
+                //bool sourcestrike = true;
+                target2->printHit(this);
+                target2->decreaseHealth();
                 break;
             }
         }

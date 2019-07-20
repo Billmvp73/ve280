@@ -124,6 +124,15 @@ void Player::printPlay(const Card *card) const {
     card->printCard();
 }
 
+void Player::printPlay(const Card *card, const Player *target1, const Player *target2) const{
+    printName();
+    cout<<" plays " << ACTION_NAMES[card->getAction()] << " towards ";
+    target1->printName();
+    cout<<" and ";
+    target2->printName();
+    cout << "!"<<endl;
+    card->printCard();
+}
 
 void Player::printPlay(const Card *card, const Player *target) const {
     printName();
